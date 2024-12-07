@@ -12,7 +12,8 @@ class UserController extends Controller
      */
     public function index()
     {
-        return view('modules/users/index');
+        $items = User::paginate(5);
+        return view('modules/users/index', compact('items'));
     }
 
     /**
@@ -54,7 +55,8 @@ class UserController extends Controller
      */
     public function show(string $id)
     {
-        //
+        $item = User::find($id);
+        return view('modules/users/show', compact('item'));
     }
 
     /**
@@ -62,7 +64,8 @@ class UserController extends Controller
      */
     public function edit(string $id)
     {
-        //
+        $item = User::find($id);
+        return view('modules.users.edit', compact('item'));
     }
 
     /**
@@ -70,7 +73,15 @@ class UserController extends Controller
      */
     public function update(Request $request, string $id)
     {
-        //
+        $item = User::find($id);
+        $item->name = $request->name;
+        $item->email = $request->email;
+        $item->address = $request->address;
+        $item->gender = $request->gender;
+        $item->age = $request->age;
+        $item->user_type = $request->user_type;
+        $item->save();
+        return to_route('index');
     }
 
     /**
