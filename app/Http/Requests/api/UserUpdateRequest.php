@@ -6,21 +6,19 @@ use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Contracts\Validation\Validator;
 use Illuminate\Http\Exceptions\HttpResponseException;
 
-
-class UserUpdateRequest extends FormRequest
+class DetallesDoctorUpdateRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
      */
     public function authorize(): bool
     {
-        return true;
+        return true; // Cambia esto según tu lógica de autorización
     }
 
     public function failedValidation(Validator $validator)
     {
-        throw new HttpResponseException(response()->json($validator->errors(),
-        422));
+        throw new HttpResponseException(response()->json($validator->errors(), 422));
     }
 
     /**
@@ -31,16 +29,9 @@ class UserUpdateRequest extends FormRequest
     public function rules(): array
     {
         return [
-            "id" => "required|numeric|min:1",
-            "name" => "required|alpha_dash|min:3|max:255|unique:users,name," . $this->id,
-            "email" => "required|email|max:255|unique:users,email," . $this->id,
-            "password" => "nullable|min:8|max:16",
-            "address" => "nullable|string|max:255",
-            "gender" => "nullable|in:male,female,other",
-            "age" => "nullable|integer|min:0|max:120",
-            "health_history" => "nullable|string|max:500", 
-            "user_type" => "required|in:admin,user,doctor", 
+            "cedula_doctor" => "required|numeric|min:1|unique:detalles_doctor,cedula_doctor," . $this->cedula_doctor,
+            "consultorio" => "nullable|string|max:255",
+            "especialidad_id" => "nullable|exists:especialidad,especialidad_id|numeric",
         ];
-        
     }
 }

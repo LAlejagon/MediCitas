@@ -17,9 +17,9 @@ class UsersSeeder extends Seeder
     {
         DB::table('users')->delete();
         User::create([
-        'name' => 'Brayan Escobar',
-        'email' => 'brayand.escobar@autonoma.edu.co',
-        'password' => Hash::make('hola123'),
- ]);
+            'name' => 'Brayan Escobar',
+            'email' => 'brayand.escobar@autonoma.edu.co',
+            'password' => Hash::make('hola123'),
+        ]);
     }
 }
