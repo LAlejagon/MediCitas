@@ -16,7 +16,6 @@
                                 <th>Género</th>
                                 <th>Edad</th>
                                 <th>Tipo de Usuario</th>
-                                <th>Acciones</th>
                             </tr>
                         </thead>
                         <tbody>

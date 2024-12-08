@@ -89,6 +89,8 @@ class UserController extends Controller
      */
     public function destroy(string $id)
     {
-        //
+        $item = User::find($id);
+        $item->delete();
+        return to_route('index');
     }
 }
