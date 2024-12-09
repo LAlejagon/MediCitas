@@ -6,7 +6,7 @@
         <div class="col">
             <div class="card">
                 <div class="card-body">
-                    <form action="{{ route('store') }}" method="post">
+                    <form action="{{ route('user.store') }}" method="post">
                         @csrf
                         @method('POST')
 
@@ -15,6 +15,9 @@
 
                         <label for="name">Escribe el nombre</label>
                         <input type="text" name="name" id="name" class="form-control" required>
+
+                        <label for="phone">Escribe el numero</label>
+                        <input type="text" name="phone" id="phone" class="form-control" required>
 
                         <label for="email">Escribe el email</label>
                         <input type="email" name="email" id="email" class="form-control" required>

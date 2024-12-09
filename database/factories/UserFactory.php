@@ -3,19 +3,12 @@
 namespace Database\Factories;
 
 use Illuminate\Database\Eloquent\Factories\Factory;
-use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Str;
 
 /**
- * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\User>
+ * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\Specialty>
  */
-class UserFactory extends Factory
+class SpecialtyFactory extends Factory
 {
-    /**
-     * The current password being used by the factory.
-     */
-    protected static ?string $password;
-
     /**
      * Define the model's default state.
      *
@@ -24,17 +17,9 @@ class UserFactory extends Factory
     public function definition(): array
     {
         return [
-            'id' => fake()->numberBetween(0000001, 99999999999),
-            'name' => fake()->name(),
-            'email' => fake()->unique()->safeEmail(),
-            'password' => bcrypt('password'), // o usa Hash::make
-            'address' => fake()->address(),
-            'gender' => fake()->randomElement(['male', 'female', 'other']),
-            'age' => fake()->numberBetween(0, 99), // Proporciona un valor para 'age'
-            'health_history' => fake()->sentence(),
-            'user_type' => fake()->randomElement(['admin', 'user', 'doctor']),
+            'especialidad_id' => fake()->unique()->numberBetween(1, 9999), // ID único para la especialidad
+            'nombre' => fake()->word() . ' Especialidad', // Nombre de la especialidad
         ];
-        
     }
 
     /**
