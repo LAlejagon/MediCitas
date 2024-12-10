@@ -29,5 +29,7 @@ class User extends Authenticatable
         'gender',
         'age',
         'password',
+        'health_history',
+        'user_type',
     ];
 }

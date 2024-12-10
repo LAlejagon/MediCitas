@@ -12,8 +12,8 @@ class UserController extends Controller
      */
     public function index()
     {
-        $items = User::paginate(5);
-        return view('modules/users/index', compact('items'));
+        $users = User::paginate(5);
+        return view('modules/index', compact('users'));
     }
 
     /**
@@ -35,17 +35,17 @@ class UserController extends Controller
             // Agrega validaciones para otros campos según sea necesario
         ]);
 
-        $item = new User();
-        $item->id = $request->id; // Asignar el valor de la cédula al campo 'id'
-        $item->name = $request->name;
-        $item->email = $request->email; // Asegúrate de que el formulario tenga un campo para el email
-        $item->address = $request->address; // Asegúrate de que el formulario tenga un campo para la dirección
-        $item->gender = $request->gender; // Asegúrate de que el formulario tenga un campo para el género
-        $item->age = $request->age; // Asegúrate de que el formulario tenga un campo para la edad
-        $item->password = bcrypt($request->password); // Asegúrate de que el formulario tenga un campo para la contraseña
-        $item->health_history = $request->health_history; // Asegúrate de que el formulario tenga un campo para el historial de salud
-        $item->user_type = $request->user_type; // Asegúrate de que el formulario tenga un campo para el tipo de usuario
-        $item->save();
+        $user = new User();
+        $user->id = $request->id; // Asignar el valor de la cédula al campo 'id'
+        $user->name = $request->name;
+        $user->email = $request->email; // Asegúrate de que el formulario tenga un campo para el email
+        $user->address = $request->address; // Asegúrate de que el formulario tenga un campo para la dirección
+        $user->gender = $request->gender; // Asegúrate de que el formulario tenga un campo para el género
+        $user->age = $request->age; // Asegúrate de que el formulario tenga un campo para la edad
+        $user->password = bcrypt($request->password); // Asegúrate de que el formulario tenga un campo para la contraseña
+        $user->health_history = $request->health_history; // Asegúrate de que el formulario tenga un campo para el historial de salud
+        $user->user_type = $request->user_type; // Asegúrate de que el formulario tenga un campo para el tipo de usuario
+        $user->save();
 
         return to_route('index');
     }
@@ -55,8 +55,8 @@ class UserController extends Controller
      */
     public function show(string $id)
     {
-        $item = User::find($id);
-        return view('modules/users/show', compact('item'));
+        $user = User::find($id);
+        return view('modules/users/show', compact('user'));
     }
 
     /**
@@ -64,8 +64,8 @@ class UserController extends Controller
      */
     public function edit(string $id)
     {
-        $item = User::find($id);
-        return view('modules.users.edit', compact('item'));
+        $user = User::find($id);
+        return view('modules.users.edit', compact('user'));
     }
 
     /**
@@ -73,14 +73,14 @@ class UserController extends Controller
      */
     public function update(Request $request, string $id)
     {
-        $item = User::find($id);
-        $item->name = $request->name;
-        $item->email = $request->email;
-        $item->address = $request->address;
-        $item->gender = $request->gender;
-        $item->age = $request->age;
-        $item->user_type = $request->user_type;
-        $item->save();
+        $user = User::find($id);
+        $user->name = $request->name;
+        $user->email = $request->email;
+        $user->address = $request->address;
+        $user->gender = $request->gender;
+        $user->age = $request->age;
+        $user->user_type = $request->user_type;
+        $user->save();
         return to_route('index');
     }
 
@@ -89,8 +89,8 @@ class UserController extends Controller
      */
     public function destroy(string $id)
     {
-        $item = User::find($id);
-        $item->delete();
+        $user = User::find($id);
+        $user->delete();
         return to_route('index');
     }
 }

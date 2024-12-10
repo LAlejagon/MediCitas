@@ -12,18 +12,18 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('users', function (Blueprint $table) {
-            $table->string('id')->unique();
+            $table->string('id')->primary(); // Cambiado a string para permitir ceros a la izquierda
             $table->string('name');
+            $table->string('phone')->nullable(); // Puedes hacer que el teléfono sea opcional
             $table->string('email')->unique();
-            $table->string('address');
-            $table->string('gender');
-            $table->integer('age');
+            $table->string('address')->nullable(); // Puedes hacer que la dirección sea opcional
+            $table->string('gender')->nullable(); // Puedes hacer que el género sea opcional
+            $table->integer('age')->nullable(); // Puedes hacer que la edad sea opcional
             $table->string('password');
-            $table->string('health_history');
-            $table->enum('user_type', ['admin', 'user', 'doctor']);
+            $table->string('health_history')->nullable(); // Agregada la columna health_history
+            $table->string('user_type')->nullable(); // Agregada la columna user_type
             $table->timestamps();
         });
-
     }
 
     /**
