@@ -8,6 +8,8 @@ use App\Http\Controllers\DateController;
 use App\Models\DoctorInfo;
 use Illuminate\Support\Facades\Route;
 use SebastianBergmann\CodeCoverage\Report\Html\Dashboard;
+use App\Http\Controllers\InvoiceController;
+
 
 Route::get('/', [DashboardController::class, 'index'])->name('index'); 
 
@@ -43,3 +45,12 @@ Route::get('/showDate/{id}', [DateController::class, 'show'])->name('date.show')
 Route::get('/editDate/{id}', [DateController::class, 'edit'])->name('date.edit');
 Route::put('/updateDate/{id}', [DateController::class, 'update'])->name('date.update');
 Route::delete('/destroyDate/{id}', [DateController::class, 'destroy'])->name('date.destroy');
+
+Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
+Route::get('login', [\App\Http\Controllers\Auth\LoginController::class, 'showLoginForm'])->name('login');
+Route::post('login', [\App\Http\Controllers\Auth\LoginController::class, 'login']);
+
+Route::post('/invoices', [InvoiceController::class, 'store']); // Crear factura
+Route::get('/invoices', [InvoiceController::class, 'index']); // Listar facturas
+Route::get('/invoices/{id}', [InvoiceController::class, 'show']); // Ver una factura específica
+Route::post('/invoices/{id}/generate-signature', [InvoiceController::class, 'generateSignature']); // Generar firma
