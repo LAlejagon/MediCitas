@@ -11,12 +11,12 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('citas', function (Blueprint $table) {
+        Schema::create('dates', function (Blueprint $table) {
             $table->id('cita_id'); // Primary key
             $table->date('fecha');
             $table->time('hora');
             $table->string('cedula_usuario'); // Foreign key to users
-            $table->unsignedBigInteger('doctor_id'); // Foreign key to doctors
+            $table->string('doctor_id'); // Foreign key to doctors
             $table->string('lugar');
             $table->string('direccion');
             $table->text('razon')->nullable();
@@ -24,7 +24,7 @@ return new class extends Migration
 
             // Foreign key constraints
             $table->foreign('cedula_usuario')->references('id')->on('users')->onDelete('cascade');
-            $table->foreign('doctor_id')->references('id')->on('doctors')->onDelete('cascade');
+            $table->foreign('doctor_id')->references('user_id')->on('doctorinfo')->onDelete('cascade');
         });
     }
 

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\DoctorInfo;
+use App\Models\User;
 use App\Models\Specialty;
 use Illuminate\Http\Request;
 
@@ -13,7 +14,7 @@ class DoctorInfoController extends Controller
      */
     public function index()
     {
-        $doctorInfo = DoctorInfo::paginate(5);
+        $doctorsInfo = DoctorInfo::with('specialty')->paginate(5); // Asegúrate de que la relación esté definida en el modelo
         return view('modules/index', compact('doctorsInfo'));
     }
 
@@ -21,10 +22,12 @@ class DoctorInfoController extends Controller
      * Show the form for creating a new resource.
      */
     public function create()
-{
-    $specialties = Specialty::all(); // Obtener todas las especialidades
-    return view('modules/doctorsInfo/create', compact('specialties'));
-}
+    {
+        $users = User::all();
+        $specialties = Specialty::all();
+
+        return view('modules/doctorsInfo/create', compact('users', 'specialties')); // Pass both to the view
+    }
 
     /**
      * Store a newly created resource in storage.
@@ -51,8 +54,12 @@ class DoctorInfoController extends Controller
      */
     public function show(string $id)
     {
-        $doctorInfo = DoctorInfo::find($id);
-        return view('modules/doctorsInfo/show', compact('doctorInfo'));
+        
+        $doctorInfo = DoctorInfo::findOrFail($id);
+        $user = User::findOrFail($doctorInfo->user_id);
+        $specialty = Specialty::findOrFail($doctorInfo->especialidad_id);
+
+        return view('modules/doctorsInfo/show', compact('doctorInfo', 'user', 'specialty'));
     }
 
     /**
@@ -60,8 +67,10 @@ class DoctorInfoController extends Controller
      */
     public function edit(string $id)
     {
-        $doctorInfo = DoctorInfo::find($id);
-        return view('modules/doctorsInfo/edit', compact('doctorInfo'));
+        $doctorInfo = DoctorInfo::findOrFail($id);
+        $specialties = Specialty::all();
+        
+        return view('modules/doctorsInfo/edit', compact('doctorInfo', 'specialties'));
     }
 
     /**
@@ -69,7 +78,7 @@ class DoctorInfoController extends Controller
      */
     public function update(Request $request, string $id)
     {
-        $doctorInfo = DoctorInfo::find($id);
+        $doctorInfo = DoctorInfo::findOrFail($id); 
         $doctorInfo->consultorio = $request->consultorio;
         $doctorInfo->especialidad_id = $request->especialidad_id;
         $doctorInfo->save();

@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\DoctorInfo;
 use App\Models\User;
 use App\Models\Specialty;
+use App\Models\Date;
 use Illuminate\Http\Request;
 
 class DashboardController extends Controller
@@ -17,7 +18,8 @@ class DashboardController extends Controller
         $users = User::paginate(5);
         $specialties = Specialty::paginate(5);
         $doctorsInfo = DoctorInfo::paginate(5);
+        $dates = Date::paginate(5);
 
-        return view('modules.index', compact('users', 'specialties', 'doctorsInfo'));
+        return view('modules.index', compact('users', 'specialties', 'doctorsInfo', 'dates'));
     }
 }

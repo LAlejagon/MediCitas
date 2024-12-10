@@ -18,8 +18,18 @@ class Date extends Model
         'hora',
         'cedula_usuario',
         'doctor_id',
-        'lugar',
-        'direccion',
         'razon',
-    ]; // Columnas que se pueden llenar masivamente
+    ]; 
+
+    // Relación con el modelo User
+    public function user()
+    {
+        return $this->belongsTo(User::class, 'cedula_usuario', 'id'); 
+    }
+
+    // Relación con el modelo Doctor
+    public function doctor()
+    {
+        return $this->belongsTo(DoctorInfo::class, 'doctor_id', 'user_id');
+    }
 }

@@ -12,13 +12,14 @@ class Specialty extends Model // Cambiar a Model
 
     protected $table = 'especialidades';
 
+    protected $primaryKey = 'especialidad_id';
+
     /**
      * Los atributos que se pueden asignar masivamente.
      *
      * @var array<int, string>
      */
     protected $fillable = [
-        'especialidad_id', // Asegúrate de que este sea el nombre correcto
-        'nombre', // Cambia 'name' a 'nombre'
+        'nombre',
     ];
 }

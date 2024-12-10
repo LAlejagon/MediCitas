@@ -11,7 +11,12 @@
                         @method('POST')
 
                         <label for="user_id">Escribe la cédula del usuario</label>
-                        <input type="text" name="user_id" id="user_id" class="form-control" required>
+                        <select name="user_id" id="user_id" class="form-control" required>
+                            <option value="">Seleccione usu id</option>
+                            @foreach ($users as $user)
+                                <option value="{{ $user->id }}">{{ $user->id }}</option>
+                            @endforeach
+                        </select>
                         
                         <label for="consultorio">Consultorio</label>
                         <input type="text" name="consultorio" id="consultorio" class="form-control" required>

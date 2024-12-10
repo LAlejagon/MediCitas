@@ -103,14 +103,14 @@
                         <table class="table table-sm table-bordered text-center">
                             <thead>
                                 <tr>
-                                    <th>ID</th>
-                                    <th>Especialidad</th>
+                                    <th>ID</th> 
+                                    <th>Acciones</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 @forelse ($doctorsInfo as $doctorInfo)
                                 <tr>
-                                    <td>{{ $doctorInfo->especialidad }}</td>
+                                    <td>{{ $doctorInfo->user_id }}</td> <!-- Mostrar el ID del doctor -->
                                     <td>
                                         <form action="{{ route('doctorInfo.destroy', $doctorInfo->user_id) }}" method="POST">
                                             @csrf
@@ -133,59 +133,49 @@
 
             </div>
         </div>
-    </div>
 
-    // Citas
+        // Citas
 
-<div class="row mt-4">
-    <div class="col">
-        <div class="card">
-            <div class="card-body">
-                <a href="{{ route('cita.create')}}" class="btn btn-primary">Agregar Cita</a>
-                <hr>
-                <table class="table table-sm table-bordered text-center">
-                    <thead>
-                        <tr>
-                            <th>ID</th>
-                            <th>Fecha</th>
-                            <th>Hora</th>
-                            <th>Usuario</th>
-                            <th>Doctor</th>
-                            <th>Lugar</th>
-                            <th>Razón</th>
-                            <th>Acciones</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @forelse ($citas as $cita)
-                        <tr>
-                            <td>{{ $cita->cita_id }}</td>
-                            <td>{{ $cita->fecha }}</td>
-                            <td>{{ $cita->hora }}</td>
-                            <td>{{ $cita->cedula_usuario }}</td>
-                            <td>{{ $cita->doctor_id }}</td>
-                            <td>{{ $cita->lugar }}</td>
-                            <td>{{ $cita->razon }}</td>
-                            <td>
-                                <form action="{{ route('cita.destroy', $cita->cita_id) }}" method="POST">
-                                    @csrf
-                                    @method('DELETE')
-                                    <a href="{{ route('cita.show', $cita->cita_id) }}" class="btn btn-info">Mostrar</a>
-                                    <a href="{{ route('cita.edit', $cita->cita_id) }}" class="btn btn-warning">Editar</a>
-                                    <button type="submit" class="btn btn-danger">Borrar</button>
-                                </form>
-                            </td>
-                        </tr>
-                        @empty
-                        <tr>
-                            <td colspan="8">No hay citas registradas</td>
-                        </tr>
-                        @endforelse
-                    </tbody>
-                </table>
+        <div class="row mt-4">
+            <div class="col">
+                <div class="card">
+                    <div class="card-body">
+                        <a href="{{ route('date.create')}}" class="btn btn-primary">Agregar Cita</a>
+                        <hr>
+                        <table class="table table-sm table-bordered text-center">
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Fecha</th>
+                                    <th>Acciones</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @forelse ($dates as $date)
+                                <tr>
+                                    <td>{{ $date->cita_id }}</td>
+                                    <td>{{ $date->fecha }}</td>
+                                    <td>
+                                        <form action="{{ route('date.destroy', $date->cita_id) }}" method="POST">
+                                            @csrf
+                                            @method('DELETE')
+                                            <a href="{{ route('date.show', $date->cita_id) }}" class="btn btn-info">Mostrar</a>
+                                            <a href="{{ route('date.edit', $date->cita_id) }}" class="btn btn-warning">Editar</a>
+                                            <button type="submit" class="btn btn-danger">Borrar</button>
+                                        </form>
+                                    </td>
+                                </tr>
+                                @empty
+                                <tr>
+                                    <td colspan="8">No hay citas registradas</td>
+                                </tr>
+                                @endforelse
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
-</div>
 
 @endsection
