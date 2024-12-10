@@ -104,13 +104,15 @@
                             <thead>
                                 <tr>
                                     <th>ID</th>
-                                    <th>Especialidad</th>
+                                    <th>Consultorio</th>
+                                    <th>Acciones</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 @forelse ($doctorsInfo as $doctorInfo)
                                 <tr>
-                                    <td>{{ $doctorInfo->especialidad }}</td>
+                                    <td>{{ $doctorInfo->user_id }}</td>
+                                    <td>{{ $doctorInfo->consultorio }}</td>
                                     <td>
                                         <form action="{{ route('doctorInfo.destroy', $doctorInfo->user_id) }}" method="POST">
                                             @csrf
