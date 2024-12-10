@@ -15,7 +15,7 @@ class DateController extends Controller
     public function index()
     {
         $dates = Date::all(); // Obtener todas las citas (dates)
-        return view('date.index', compact('dates'));
+        return view('index', compact('dates'));
     }
 
     /**
@@ -62,12 +62,16 @@ class DateController extends Controller
     /**
      * Display the specified resource.
      */
+    /**
+     * Display the specified resource.
+     */
     public function show(string $id)
     {
-        $doctorInfo = DoctorInfo::findOrFail($id);
-        $user = User::findOrFail($doctorInfo->user_id);
+        $cita = Date::findOrFail($id);
+        $user = User::findOrFail($cita->cedula_usuario);
+        $doctorInfo = DoctorInfo::findOrFail($cita->doctor_id);
 
-        return view('modules/doctorsInfo/show', compact('doctorInfo', 'user', 'specialty'));
+        return view('modules/dates/show', compact('cita', 'user', 'doctorInfo'));
     }
 
     /**
@@ -75,9 +79,11 @@ class DateController extends Controller
      */
     public function edit(string $id)
     {
-        $doctorInfo = DoctorInfo::findOrFail($id);
-        
-        return view('modules/doctorsInfo/edit', compact('doctorInfo', 'specialties'));
+        $cita = Date::findOrFail($id);
+        $users = User::all();
+        $doctorsInfo = DoctorInfo::all();
+
+        return view('modules/dates/edit', compact('cita', 'users', 'doctorsInfo'));
     }
 
     /**
@@ -85,11 +91,25 @@ class DateController extends Controller
      */
     public function update(Request $request, string $id)
     {
-        $doctorInfo = DoctorInfo::findOrFail($id); 
-        $doctorInfo->consultorio = $request->consultorio;
-        $doctorInfo->especialidad_id = $request->especialidad_id;
-        $doctorInfo->save();
-        return to_route('index');
+        $cita = Date::findOrFail($id);
+
+        $request->validate([
+            'fecha' => 'required|date',
+            'hora' => 'required|date_format:H:i',
+            'cedula_usuario' => 'required|integer|exists:users,id',
+            'doctor_id' => 'required|integer|exists:doctorinfo,user_id',
+            'razon' => 'nullable|string|max:255',
+        ]);
+
+        $cita->fecha = $request->fecha;
+        $cita->hora = $request->hora;
+        $cita->cedula_usuario = $request->cedula_usuario;
+        $cita->doctor_id = $request->doctor_id;
+        $cita->razon = $request->razon;
+
+        $cita->save();
+
+        return to_route('index')->with('success', 'Cita actualizada exitosamente.');
     }
 
     /**
@@ -97,8 +117,9 @@ class DateController extends Controller
      */
     public function destroy(string $id)
     {
-        $doctorInfo = DoctorInfo::find($id);
-        $doctorInfo->delete();
-        return to_route('index');
+        $cita = Date::findOrFail($id);
+        $cita->delete();
+
+        return to_route('index')->with('success', 'Cita eliminada exitosamente.');
     }
 }

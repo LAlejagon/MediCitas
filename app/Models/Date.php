@@ -11,7 +11,7 @@ class Date extends Model
 
     protected $table = 'dates'; // Nombre de la tabla
 
-    protected $primaryKey = 'date_id'; // Nombre de la clave primaria
+    protected $primaryKey = 'cita_id'; // Nombre de la clave primaria
 
     protected $fillable = [
         'fecha',
