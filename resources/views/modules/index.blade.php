@@ -2,7 +2,7 @@
 
 @section('contenido')
     <div class="container mt-4">
-        <h2>Crud con Laravel 11 - Usuarios</h2>
+        <h2>MEDICITAS</h2>
 
         // Usuarios
 
@@ -176,7 +176,8 @@
                 </div>
             </div>
             
-            // Schedule
+
+              // Schedule
 
             <div class="row mt-4">
                 <div class="col">
