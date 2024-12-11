@@ -7,7 +7,9 @@ use App\Models\Date;
 use App\Models\DoctorInfo;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use App\Http\Resources\ScheduleResource; // Importa el recurso ScheduleResource
+use App\Http\Resources\ScheduleResource;
+use App\Http\Resources\DoctorInfoResource;
+use App\Http\Resources\DateResource;
 
 class ScheduleController extends Controller
 {

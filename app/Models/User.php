@@ -10,6 +10,7 @@ class User extends Model
     use HasFactory;
 
     protected $fillable = [
+        'id',
         'name',
         'email',
         'password',
@@ -22,6 +23,6 @@ class User extends Model
 
     // El campo 'id' es auto-incrementable por defecto en MySQL
     protected $primaryKey = 'id';
-    public $incrementing = true; // Esto asegura que el 'id' sea auto incrementable
+    public $incrementing = false; // Esto asegura que el 'id' sea auto incrementable
     public $timestamps = true;
 }

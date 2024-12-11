@@ -7,7 +7,9 @@ use App\Models\User;
 use App\Models\Specialty;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
-use App\Http\Resources\DoctorInfoResource; // Importa el recurso DoctorInfoResource
+use App\Http\Resources\DoctorInfoResource;
+use App\Http\Resources\SpecialtyResource;
+use App\Http\Resources\UserResource;
 
 class DoctorInfoController extends Controller
 {

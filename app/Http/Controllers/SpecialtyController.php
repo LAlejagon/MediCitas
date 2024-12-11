@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Specialty;
 use Illuminate\Http\Request;
+use App\Http\Resources\SpecialtyResource;
 
 class SpecialtyController extends Controller
 {

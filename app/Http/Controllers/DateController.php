@@ -8,6 +8,8 @@ use App\Models\DoctorInfo;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use App\Http\Resources\DateResource; // Importa el recurso DateResource
+use App\Http\Resources\UserResource;
+use App\Http\Resources\DoctorInfoResource;
 
 class DateController extends Controller
 {
