@@ -23,25 +23,23 @@ class UserController extends Controller
     public function store(Request $request)
     {
         $validatedData = $request->validate([
-            'id' => 'required|string|unique:users,id',
             'name' => 'required|string|max:255',
-            'email' => 'required|email|unique:users,email',
+            'email' => 'required|string|email|max:255|unique:users',
+            'password' => 'required|string|min:8',
             'address' => 'nullable|string|max:255',
             'gender' => 'nullable|string|max:10',
             'age' => 'nullable|integer|min:0',
-            'password' => 'required|string|min:8',
             'health_history' => 'nullable|string|max:500',
             'user_type' => 'required|string|max:50',
         ]);
 
         $user = User::create([
-            'id' => $validatedData['id'],
             'name' => $validatedData['name'],
             'email' => $validatedData['email'],
+            'password' => bcrypt($validatedData['password']),
             'address' => $validatedData['address'],
             'gender' => $validatedData['gender'],
             'age' => $validatedData['age'],
-            'password' => bcrypt($validatedData['password']),
             'health_history' => $validatedData['health_history'],
             'user_type' => $validatedData['user_type'],
         ]);
