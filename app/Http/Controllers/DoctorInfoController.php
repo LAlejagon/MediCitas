@@ -6,6 +6,8 @@ use App\Models\DoctorInfo;
 use App\Models\User;
 use App\Models\Specialty;
 use Illuminate\Http\Request;
+use Illuminate\Http\Response;
+use App\Http\Resources\DoctorInfoResource; // Importa el recurso DoctorInfoResource
 
 class DoctorInfoController extends Controller
 {
@@ -14,19 +16,15 @@ class DoctorInfoController extends Controller
      */
     public function index()
     {
-        $doctorsInfo = DoctorInfo::with('specialty')->paginate(5); // Asegúrate de que la relación esté definida en el modelo
-        return view('modules/index', compact('doctorsInfo'));
-    }
-
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
-    {
-        $users = User::all();
-        $specialties = Specialty::all();
-
-        return view('modules/doctorsInfo/create', compact('users', 'specialties')); // Pass both to the view
+        try {
+            $doctorsInfo = DoctorInfo::with('specialty')->paginate(5);
+            return DoctorInfoResource::collection($doctorsInfo); // Usar el recurso para la colección de doctores
+        } catch (\Exception $e) {
+            return response()->json([
+                'error' => 'Error al obtener la lista de doctores',
+                'message' => $e->getMessage()
+            ], Response::HTTP_INTERNAL_SERVER_ERROR);
+        }
     }
 
     /**
@@ -34,43 +32,49 @@ class DoctorInfoController extends Controller
      */
     public function store(Request $request)
     {
-        $request->validate([
-            'user_id' => 'required|string|exists:users,id', // Cambiado a exists para verificar que el usuario existe
-            'consultorio' => 'required|string',
-            'especialidad_id' => 'required|integer|exists:especialidades,especialidad_id', // Verifica que la especialidad existe
+        $validated = $request->validate([
+            'user_id' => 'required|integer|exists:users,id',
+            'consultorio' => 'required|string|max:255',
+            'especialidad_id' => 'required|integer|exists:especialidades,especialidad_id',
         ]);
 
-        $doctorInfo = new DoctorInfo();
-        $doctorInfo->user_id = $request->user_id;
-        $doctorInfo->consultorio = $request->consultorio;
-        $doctorInfo->especialidad_id = $request->especialidad_id;
+        try {
+            $doctorInfo = DoctorInfo::create([
+                'user_id' => $validated['user_id'],
+                'consultorio' => $validated['consultorio'],
+                'especialidad_id' => $validated['especialidad_id'],
+            ]);
 
-        $doctorInfo->save();
-
-        return to_route('index');
+            return new DoctorInfoResource($doctorInfo); // Usar el recurso para la respuesta del doctor creado
+        } catch (\Exception $e) {
+            return response()->json([
+                'error' => 'Error al crear la información del doctor',
+                'message' => $e->getMessage()
+            ], Response::HTTP_INTERNAL_SERVER_ERROR);
+        }
     }
+
     /**
      * Display the specified resource.
      */
     public function show(string $id)
     {
-        
-        $doctorInfo = DoctorInfo::findOrFail($id);
-        $user = User::findOrFail($doctorInfo->user_id);
-        $specialty = Specialty::findOrFail($doctorInfo->especialidad_id);
+        try {
+            $doctorInfo = DoctorInfo::findOrFail($id);
+            $user = User::findOrFail($doctorInfo->user_id);
+            $specialty = Specialty::findOrFail($doctorInfo->especialidad_id);
 
-        return view('modules/doctorsInfo/show', compact('doctorInfo', 'user', 'specialty'));
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(string $id)
-    {
-        $doctorInfo = DoctorInfo::findOrFail($id);
-        $specialties = Specialty::all();
-        
-        return view('modules/doctorsInfo/edit', compact('doctorInfo', 'specialties'));
+            return response()->json([
+                'doctorInfo' => new DoctorInfoResource($doctorInfo),
+                'user' => new UserResource($user),
+                'specialty' => new SpecialtyResource($specialty),
+            ], Response::HTTP_OK);
+        } catch (\Exception $e) {
+            return response()->json([
+                'error' => 'Doctor no encontrado',
+                'message' => $e->getMessage()
+            ], Response::HTTP_NOT_FOUND);
+        }
     }
 
     /**
@@ -78,11 +82,23 @@ class DoctorInfoController extends Controller
      */
     public function update(Request $request, string $id)
     {
-        $doctorInfo = DoctorInfo::findOrFail($id); 
-        $doctorInfo->consultorio = $request->consultorio;
-        $doctorInfo->especialidad_id = $request->especialidad_id;
-        $doctorInfo->save();
-        return to_route('index');
+        try {
+            $doctorInfo = DoctorInfo::findOrFail($id);
+
+            $validated = $request->validate([
+                'consultorio' => 'required|string|max:255',
+                'especialidad_id' => 'required|integer|exists:especialidades,especialidad_id',
+            ]);
+
+            $doctorInfo->update($validated);
+
+            return new DoctorInfoResource($doctorInfo); // Usar el recurso para la respuesta del doctor actualizado
+        } catch (\Exception $e) {
+            return response()->json([
+                'error' => 'Error al actualizar la información del doctor',
+                'message' => $e->getMessage()
+            ], Response::HTTP_INTERNAL_SERVER_ERROR);
+        }
     }
 
     /**
@@ -90,8 +106,16 @@ class DoctorInfoController extends Controller
      */
     public function destroy(string $id)
     {
-        $doctorInfo = DoctorInfo::find($id);
-        $doctorInfo->delete();
-        return to_route('index');
+        try {
+            $doctorInfo = DoctorInfo::findOrFail($id);
+            $doctorInfo->delete();
+
+            return response()->json(['message' => 'Doctor eliminado exitosamente'], Response::HTTP_OK);
+        } catch (\Exception $e) {
+            return response()->json([
+                'error' => 'Error al eliminar la información del doctor',
+                'message' => $e->getMessage()
+            ], Response::HTTP_INTERNAL_SERVER_ERROR);
+        }
     }
 }

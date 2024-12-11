@@ -24,7 +24,7 @@ return new class extends Migration
 
             // Foreign key constraints
             $table->foreign('cedula_usuario')->references('id')->on('users')->onDelete('cascade');
-            $table->foreign('doctor_id')->references('user_id')->on('doctorinfo')->onDelete('cascade');
+            $table->foreign('doctor_id')->references('user_id')->on('doctor_info')->onDelete('cascade');
         });
     }
 

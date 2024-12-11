@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\User;
 use Illuminate\Http\Request;
+use App\Http\Resources\UserResource; // Importa el recurso UserResource
 
 class UserController extends Controller
 {
@@ -13,15 +14,7 @@ class UserController extends Controller
     public function index()
     {
         $users = User::paginate(5);
-        return view('modules/index', compact('users'));
-    }
-
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
-    {
-        return view('modules/users/create');
+        return UserResource::collection($users); // Usar el recurso para la colección
     }
 
     /**
@@ -29,25 +22,31 @@ class UserController extends Controller
      */
     public function store(Request $request)
     {
-        $request->validate([
-            'id' => 'required|string|unique:users,id', // Validar que el ID sea único
-            'name' => 'required|string',
-            // Agrega validaciones para otros campos según sea necesario
+        $validatedData = $request->validate([
+            'id' => 'required|string|unique:users,id',
+            'name' => 'required|string|max:255',
+            'email' => 'required|email|unique:users,email',
+            'address' => 'nullable|string|max:255',
+            'gender' => 'nullable|string|max:10',
+            'age' => 'nullable|integer|min:0',
+            'password' => 'required|string|min:8',
+            'health_history' => 'nullable|string|max:500',
+            'user_type' => 'required|string|max:50',
         ]);
 
-        $user = new User();
-        $user->id = $request->id; // Asignar el valor de la cédula al campo 'id'
-        $user->name = $request->name;
-        $user->email = $request->email; // Asegúrate de que el formulario tenga un campo para el email
-        $user->address = $request->address; // Asegúrate de que el formulario tenga un campo para la dirección
-        $user->gender = $request->gender; // Asegúrate de que el formulario tenga un campo para el género
-        $user->age = $request->age; // Asegúrate de que el formulario tenga un campo para la edad
-        $user->password = bcrypt($request->password); // Asegúrate de que el formulario tenga un campo para la contraseña
-        $user->health_history = $request->health_history; // Asegúrate de que el formulario tenga un campo para el historial de salud
-        $user->user_type = $request->user_type; // Asegúrate de que el formulario tenga un campo para el tipo de usuario
-        $user->save();
+        $user = User::create([
+            'id' => $validatedData['id'],
+            'name' => $validatedData['name'],
+            'email' => $validatedData['email'],
+            'address' => $validatedData['address'],
+            'gender' => $validatedData['gender'],
+            'age' => $validatedData['age'],
+            'password' => bcrypt($validatedData['password']),
+            'health_history' => $validatedData['health_history'],
+            'user_type' => $validatedData['user_type'],
+        ]);
 
-        return to_route('index');
+        return new UserResource($user); // Usar el recurso para la respuesta del usuario creado
     }
 
     /**
@@ -56,16 +55,10 @@ class UserController extends Controller
     public function show(string $id)
     {
         $user = User::find($id);
-        return view('modules/users/show', compact('user'));
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(string $id)
-    {
-        $user = User::find($id);
-        return view('modules.users.edit', compact('user'));
+        if (!$user) {
+            return response()->json(['message' => 'User not found'], 404);
+        }
+        return new UserResource($user); // Usar el recurso para la respuesta del usuario
     }
 
     /**
@@ -74,14 +67,22 @@ class UserController extends Controller
     public function update(Request $request, string $id)
     {
         $user = User::find($id);
-        $user->name = $request->name;
-        $user->email = $request->email;
-        $user->address = $request->address;
-        $user->gender = $request->gender;
-        $user->age = $request->age;
-        $user->user_type = $request->user_type;
-        $user->save();
-        return to_route('index');
+        if (!$user) {
+            return response()->json(['message' => 'User not found'], 404);
+        }
+
+        $validatedData = $request->validate([
+            'name' => 'required|string|max:255',
+            'email' => 'required|email|unique:users,email,' . $user->id,
+            'address' => 'nullable|string|max:255',
+            'gender' => 'nullable|string|max:10',
+            'age' => 'nullable|integer|min:0',
+            'user_type' => 'required|string|max:50',
+        ]);
+
+        $user->update($validatedData);
+
+        return new UserResource($user); // Usar el recurso para la respuesta del usuario actualizado
     }
 
     /**
@@ -90,7 +91,12 @@ class UserController extends Controller
     public function destroy(string $id)
     {
         $user = User::find($id);
+        if (!$user) {
+            return response()->json(['message' => 'User not found'], 404);
+        }
+
         $user->delete();
-        return to_route('index');
+
+        return response()->json(['message' => 'User deleted successfully'], 200); // Respuesta estándar de éxito
     }
 }

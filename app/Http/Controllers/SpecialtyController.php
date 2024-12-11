@@ -12,16 +12,8 @@ class SpecialtyController extends Controller
      */
     public function index()
     {
-        $specialties = Specialty::paginate(5); 
-        return view('modules/index', compact('specialties'));
-    }
-
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
-    {
-        return view('modules/specialties/create');
+        $specialties = Specialty::paginate(5);
+        return response()->json(SpecialtyResource::collection($specialties)); // Usar el recurso para la colección
     }
 
     /**
@@ -29,17 +21,15 @@ class SpecialtyController extends Controller
      */
     public function store(Request $request)
     {
-        $request->validate([
-            'especialidad_id' => 'required|integer|unique:especialidades,especialidad_id', 
-            'nombre' => 'required|string|max:255', 
+        $validatedData = $request->validate([
+            'especialidad_id' => 'required|integer|unique:specialties,especialidad_id',
+            'nombre' => 'required|string|max:255',
         ]);
 
-        $specialty = new Specialty();
-        $specialty->especialidad_id = $request->especialidad_id; 
-        $specialty->nombre = $request->nombre; 
+        $specialty = new Specialty($validatedData);
         $specialty->save();
 
-        return to_route('index'); 
+        return response()->json(new SpecialtyResource($specialty), 201); // Retornar la especialidad creada
     }
 
     /**
@@ -47,17 +37,13 @@ class SpecialtyController extends Controller
      */
     public function show(string $id)
     {
-        $specialty = Specialty::where('especialidad_id', $id)->firstOrFail();
-        return view('modules/specialties/show', compact('specialty'));
-    }
+        $specialty = Specialty::where('especialidad_id', $id)->first();
 
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(string $id)
-    {
-        $specialty = Specialty::where('especialidad_id', $id)->firstOrFail();
-        return view('modules/specialties/edit', compact('specialty'));
+        if (!$specialty) {
+            return response()->json(['message' => 'Specialty not found'], 404);
+        }
+
+        return new SpecialtyResource($specialty); // Usar el recurso para la respuesta de la especialidad
     }
 
     /**
@@ -65,16 +51,19 @@ class SpecialtyController extends Controller
      */
     public function update(Request $request, string $id)
     {
-        $request->validate([
+        $specialty = Specialty::where('especialidad_id', $id)->first();
+
+        if (!$specialty) {
+            return response()->json(['message' => 'Specialty not found'], 404);
+        }
+
+        $validatedData = $request->validate([
             'nombre' => 'required|string|max:255',
         ]);
 
-        $specialty = Specialty::where('especialidad_id', $id)->firstOrFail();
+        $specialty->update($validatedData);
 
-        $specialty->nombre = $request->nombre;
-        $specialty->save();
-
-        return to_route('index');
+        return new SpecialtyResource($specialty); // Usar el recurso para la respuesta de la especialidad actualizada
     }
 
     /**
@@ -82,8 +71,14 @@ class SpecialtyController extends Controller
      */
     public function destroy(string $id)
     {
-        $specialty = Specialty::findOrFail($id);
+        $specialty = Specialty::where('especialidad_id', $id)->first();
+
+        if (!$specialty) {
+            return response()->json(['message' => 'Specialty not found'], 404);
+        }
+
         $specialty->delete();
-        return to_route('index');
+
+        return response()->json(['message' => 'Specialty deleted successfully'], 200); // Retorno estándar de éxito
     }
 }

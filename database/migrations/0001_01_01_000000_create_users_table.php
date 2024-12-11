@@ -15,7 +15,7 @@ return new class extends Migration
             $table->string('id')->primary(); // Cambiado a string para permitir ceros a la izquierda
             $table->string('name');
             $table->string('phone')->nullable(); // Puedes hacer que el teléfono sea opcional
-            $table->string('email')->unique();
+            $table->string('email')->unique()->index();
             $table->string('address')->nullable(); // Puedes hacer que la dirección sea opcional
             $table->string('gender')->nullable(); // Puedes hacer que el género sea opcional
             $table->integer('age')->nullable(); // Puedes hacer que la edad sea opcional

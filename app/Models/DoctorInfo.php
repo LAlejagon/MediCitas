@@ -10,7 +10,7 @@ class DoctorInfo extends Model
 {
     use HasFactory, Notifiable;
 
-    protected $table = 'doctorInfo';
+    protected $table = 'doctor_info';
     protected $primaryKey = 'user_id';
 
     protected $fillable = [

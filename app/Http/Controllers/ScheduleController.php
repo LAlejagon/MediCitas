@@ -6,6 +6,8 @@ use App\Models\Schedule;
 use App\Models\Date;
 use App\Models\DoctorInfo;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use App\Http\Resources\ScheduleResource; // Importa el recurso ScheduleResource
 
 class ScheduleController extends Controller
 {
@@ -14,19 +16,9 @@ class ScheduleController extends Controller
      */
     public function index()
     {
-        $schedules = Schedule::all(); // Obtener todos los horarios
-        return view('index', compact('schedules'));
-    }
-
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
-    {
-        $doctorsInfo = DoctorInfo::all();
-        $dates = Date::all(); // Asegúrate de que este modelo exista
-
-        return view('modules/schedules/create', compact('doctorsInfo', 'dates')); 
+        // Obtener todos los horarios del usuario autenticado
+        $schedules = Schedule::where('user_id', Auth::id())->paginate(5);
+        return ScheduleResource::collection($schedules); // Usar el recurso para la colección
     }
 
     /**
@@ -34,22 +26,21 @@ class ScheduleController extends Controller
      */
     public function store(Request $request)
     {
-        $request->validate([
-            'user_id' => 'required|integer|exists:users,id', 
+        $validatedData = $request->validate([
             'cita_id' => 'required|integer|exists:dates,cita_id',
             'fecha' => 'required|date',
         ]);
 
-        // Creación de un nuevo horario
-        $schedule = new Schedule();
-        $schedule->user_id = $request->user_id;
-        $schedule->cita_id = $request->cita_id;
-        $schedule->fecha = $request->fecha;
+        // Crear un nuevo horario para el usuario autenticado
+        $schedule = new Schedule([
+            'user_id' => Auth::id(),
+            'cita_id' => $validatedData['cita_id'],
+            'fecha' => $validatedData['fecha'],
+        ]);
 
         $schedule->save();
 
-        // Redirigir a la ruta de índice con un mensaje de éxito
-        return redirect()->route('index')->with('success', 'Horario creado exitosamente.');
+        return new ScheduleResource($schedule); // Usar el recurso para la respuesta del horario creado
     }
 
     /**
@@ -57,23 +48,17 @@ class ScheduleController extends Controller
      */
     public function show(string $user_id)
     {
-        $schedule = Schedule::findOrFail($user_id);
+        // Obtener el horario de un usuario específico
+        $schedule = Schedule::where('user_id', $user_id)->firstOrFail();
+
         $user = DoctorInfo::findOrFail($schedule->user_id);
         $date = Date::findOrFail($schedule->cita_id);
 
-        return view('modules/schedules/show', compact('schedule', 'user', 'date'));
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(string $user_id)
-    {
-        $schedule = Schedule::findOrFail($user_id);
-        $users = DoctorInfo::all();
-        $dates = Date::all();
-
-        return view('modules/schedules/edit', compact('schedule', 'users', 'dates'));
+        return response()->json([
+            'schedule' => new ScheduleResource($schedule),
+            'user' => new DoctorInfoResource($user),
+            'date' => new DateResource($date),
+        ]);
     }
 
     /**
@@ -81,19 +66,16 @@ class ScheduleController extends Controller
      */
     public function update(Request $request, string $user_id)
     {
-        $schedule = Schedule::findOrFail($user_id);
+        $schedule = Schedule::where('user_id', $user_id)->firstOrFail();
 
-        $request->validate([
+        $validatedData = $request->validate([
             'cita_id' => 'required|integer|exists:dates,cita_id',
             'fecha' => 'required|date',
         ]);
 
-        $schedule->cita_id = $request->cita_id;
-        $schedule->fecha = $request->fecha;
+        $schedule->update($validatedData);
 
-        $schedule->save();
-
-        return redirect()->route('schedules.index')->with('success', 'Horario actualizado exitosamente.');
+        return new ScheduleResource($schedule); // Usar el recurso para la respuesta del horario actualizado
     }
 
     /**
@@ -101,9 +83,10 @@ class ScheduleController extends Controller
      */
     public function destroy(string $user_id)
     {
-        $schedule = Schedule::findOrFail($user_id);
+        $schedule = Schedule::where('user_id', $user_id)->firstOrFail();
+
         $schedule->delete();
 
-        return redirect()->route('index')->with('success', 'Horario eliminado exitosamente.');
+        return response()->json(['message' => 'Horario eliminado exitosamente.'], 200); // Retorno estándar de éxito
     }
 }

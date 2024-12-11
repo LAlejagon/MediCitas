@@ -13,7 +13,7 @@ class CreateDoctorInfoTable extends Migration
      */
     public function up()
     {
-        Schema::create('doctorInfo', function (Blueprint $table) {
+        Schema::create('doctor_info', function (Blueprint $table) {
             $table->string('user_id')->primary(); 
             $table->string('consultorio'); 
             $table->unsignedBigInteger('especialidad_id'); 

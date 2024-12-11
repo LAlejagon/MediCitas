@@ -6,6 +6,8 @@ use App\Models\Date;
 use App\Models\User;
 use App\Models\DoctorInfo;
 use Illuminate\Http\Request;
+use Illuminate\Http\Response;
+use App\Http\Resources\DateResource; // Importa el recurso DateResource
 
 class DateController extends Controller
 {
@@ -14,76 +16,64 @@ class DateController extends Controller
      */
     public function index()
     {
-        $dates = Date::all(); // Obtener todas las citas (dates)
-        return view('index', compact('dates'));
-    }
-
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
-    {
-        $users = User::all();
-        $doctorsInfo = DoctorInfo::all();
-
-        return view('modules/dates/create', compact('users', 'doctorsInfo')); 
+        $dates = Date::all();
+        return DateResource::collection($dates); // Usar el recurso para la colección de citas
     }
 
     /**
      * Store a newly created resource in storage.
      */
     public function store(Request $request)
-{
-        // Validación de los datos recibidos
-        $request->validate([
+    {
+        $validatedData = $request->validate([
             'fecha' => 'required|date',
             'hora' => 'required|date_format:H:i',
-            'cedula_usuario' => 'required|integer|exists:users,id', // Verifica que el usuario existe
-            'doctor_id' => 'required|integer|exists:doctorinfo,user_id', // Verifica que el doctor existe
-            'razon' => 'nullable|string|max:255', // Razón es opcional
+            'cedula_usuario' => 'required|integer|exists:users,id', // Validar que el usuario exista
+            'doctor_id' => 'required|integer|exists:doctorinfo,user_id', // Validar que el doctor exista
+            'razon' => 'nullable|string|max:255',
         ]);
 
-        // Creación de una nueva cita
-        $cita = new Date();
-        $cita->fecha = $request->fecha;
-        $cita->hora = $request->hora;
-        $cita->cedula_usuario = $request->cedula_usuario;
-        $cita->doctor_id = $request->doctor_id;
-        $cita->razon = $request->razon;
-        $cita->lugar = "no se";
-        $cita->direccion = "tampoco se";
+        try {
+            $cita = Date::create([
+                'fecha' => $validatedData['fecha'],
+                'hora' => $validatedData['hora'],
+                'cedula_usuario' => $validatedData['cedula_usuario'],
+                'doctor_id' => $validatedData['doctor_id'],
+                'razon' => $validatedData['razon'] ?? null,
+                'lugar' => 'no se', // Definir un lugar por defecto o manejarlo según la lógica del negocio
+                'direccion' => 'tampoco se',
+            ]);
 
-        // Guardar la cita en la base de datos
-        $cita->save();
-
-        // Redirigir a la ruta de índice con un mensaje de éxito
-        return redirect()->route('index')->with('success', 'Cita creada exitosamente.');
+            return new DateResource($cita); // Usar el recurso para la respuesta de la cita creada
+        } catch (\Exception $e) {
+            return response()->json([
+                'error' => 'Error al crear la cita',
+                'message' => $e->getMessage()
+            ], Response::HTTP_INTERNAL_SERVER_ERROR);
+        }
     }
-    /**
-     * Display the specified resource.
-     */
+
     /**
      * Display the specified resource.
      */
     public function show(string $id)
     {
-        $cita = Date::findOrFail($id);
-        $user = User::findOrFail($cita->cedula_usuario);
-        $doctorInfo = DoctorInfo::findOrFail($cita->doctor_id);
+        try {
+            $cita = Date::findOrFail($id);
+            $user = User::findOrFail($cita->cedula_usuario);
+            $doctorInfo = DoctorInfo::findOrFail($cita->doctor_id);
 
-        return view('modules/dates/show', compact('cita', 'user', 'doctorInfo'));
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(string $id)
-    {
-        $cita = Date::findOrFail($id);
-        $users = User::all();
-        $doctorsInfo = DoctorInfo::all();
-
-        return view('modules/dates/edit', compact('cita', 'users', 'doctorsInfo'));
+            return response()->json([
+                'cita' => new DateResource($cita),
+                'user' => new UserResource($user),
+                'doctorInfo' => new DoctorInfoResource($doctorInfo),
+            ], Response::HTTP_OK);
+        } catch (\Exception $e) {
+            return response()->json([
+                'error' => 'Cita no encontrada',
+                'message' => $e->getMessage()
+            ], Response::HTTP_NOT_FOUND);
+        }
     }
 
     /**
@@ -93,7 +83,7 @@ class DateController extends Controller
     {
         $cita = Date::findOrFail($id);
 
-        $request->validate([
+        $validatedData = $request->validate([
             'fecha' => 'required|date',
             'hora' => 'required|date_format:H:i',
             'cedula_usuario' => 'required|integer|exists:users,id',
@@ -101,15 +91,16 @@ class DateController extends Controller
             'razon' => 'nullable|string|max:255',
         ]);
 
-        $cita->fecha = $request->fecha;
-        $cita->hora = $request->hora;
-        $cita->cedula_usuario = $request->cedula_usuario;
-        $cita->doctor_id = $request->doctor_id;
-        $cita->razon = $request->razon;
+        try {
+            $cita->update($validatedData);
 
-        $cita->save();
-
-        return to_route('index')->with('success', 'Cita actualizada exitosamente.');
+            return new DateResource($cita); // Usar el recurso para la respuesta de la cita actualizada
+        } catch (\Exception $e) {
+            return response()->json([
+                'error' => 'Error al actualizar la cita',
+                'message' => $e->getMessage()
+            ], Response::HTTP_INTERNAL_SERVER_ERROR);
+        }
     }
 
     /**
@@ -117,9 +108,16 @@ class DateController extends Controller
      */
     public function destroy(string $id)
     {
-        $cita = Date::findOrFail($id);
-        $cita->delete();
+        try {
+            $cita = Date::findOrFail($id);
+            $cita->delete();
 
-        return to_route('index')->with('success', 'Cita eliminada exitosamente.');
+            return response()->json(['message' => 'Cita eliminada exitosamente'], Response::HTTP_OK);
+        } catch (\Exception $e) {
+            return response()->json([
+                'error' => 'Error al eliminar la cita',
+                'message' => $e->getMessage()
+            ], Response::HTTP_INTERNAL_SERVER_ERROR);
+        }
     }
 }

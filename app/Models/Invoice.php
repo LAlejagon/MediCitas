@@ -18,4 +18,8 @@ class Invoice extends Model
         'total',
         'signature',
     ];
+
+    protected $casts = [
+        'details' => 'array', // Para asegurarnos de que 'details' se maneja como un array
+    ];
 }
