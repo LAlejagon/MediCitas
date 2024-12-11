@@ -21,31 +21,35 @@ class UserController extends Controller
      * Store a newly created resource in storage.
      */
     public function store(Request $request)
-    {
-        $validatedData = $request->validate([
-            'name' => 'required|string|max:255',
-            'email' => 'required|string|email|max:255|unique:users',
-            'password' => 'required|string|min:8',
-            'address' => 'nullable|string|max:255',
-            'gender' => 'nullable|string|max:10',
-            'age' => 'nullable|integer|min:0',
-            'health_history' => 'nullable|string|max:500',
-            'user_type' => 'required|string|max:50',
-        ]);
+{
+    // Establecer el encabezado 'Accept' como 'application/json' para esta solicitud
+    $request->headers->set('Accept', 'application/json');
 
-        $user = User::create([
-            'name' => $validatedData['name'],
-            'email' => $validatedData['email'],
-            'password' => bcrypt($validatedData['password']),
-            'address' => $validatedData['address'],
-            'gender' => $validatedData['gender'],
-            'age' => $validatedData['age'],
-            'health_history' => $validatedData['health_history'],
-            'user_type' => $validatedData['user_type'],
-        ]);
+    $validatedData = $request->validate([
+        'name' => 'required|string|max:255',
+        'email' => 'required|string|email|max:255|unique:users',
+        'password' => 'required|string|min:8',
+        'address' => 'nullable|string|max:255',
+        'gender' => 'nullable|string|max:10',
+        'age' => 'nullable|integer|min:0',
+        'health_history' => 'nullable|string|max:500',
+        'user_type' => 'required|string|max:50',
+    ]);
 
-        return new UserResource($user); // Usar el recurso para la respuesta del usuario creado
-    }
+    $user = User::create([
+        'name' => $validatedData['name'],
+        'email' => $validatedData['email'],
+        'password' => bcrypt($validatedData['password']),
+        'address' => $validatedData['address'],
+        'gender' => $validatedData['gender'],
+        'age' => $validatedData['age'],
+        'health_history' => $validatedData['health_history'],
+        'user_type' => $validatedData['user_type'],
+    ]);
+
+    return response()->json(new UserResource($user), 201); // Respuesta JSON explícita con código de éxito
+}
+
 
     /**
      * Display the specified resource.

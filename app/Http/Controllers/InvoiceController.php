@@ -33,7 +33,7 @@ class InvoiceController extends Controller
                 'total' => $validated['total'],
             ]);
 
-            return new InvoiceResource($invoice); // Usar el recurso para la respuesta de la factura creada
+            return response()->json(new InvoiceResource($invoice), 201); // Usar el recurso para la respuesta de la factura creada
         } catch (\Exception $e) {
             return response()->json([
                 'error' => 'Error al crear la factura',

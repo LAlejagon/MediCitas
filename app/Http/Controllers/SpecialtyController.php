@@ -63,8 +63,8 @@ class SpecialtyController extends Controller
 
         $specialty->update($validatedData);
 
-        return new SpecialtyResource($specialty); // Usar el recurso para la respuesta de la especialidad actualizada
-    }
+        return response()->json(new SpecialtyResource($specialty));
+        }
 
     /**
      * Remove the specified resource from storage.

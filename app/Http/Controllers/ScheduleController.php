@@ -40,7 +40,7 @@ class ScheduleController extends Controller
 
         $schedule->save();
 
-        return new ScheduleResource($schedule); // Usar el recurso para la respuesta del horario creado
+        return response()->json(new ScheduleResource($schedule), 201); // Usar el recurso para la respuesta del horario creado
     }
 
     /**

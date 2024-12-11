@@ -44,7 +44,7 @@ class DateController extends Controller
                 'direccion' => 'tampoco se',
             ]);
 
-            return new DateResource($cita); // Usar el recurso para la respuesta de la cita creada
+            return response()->json(new DateResource($cita), 201); // Usar el recurso para la respuesta de la cita creada
         } catch (\Exception $e) {
             return response()->json([
                 'error' => 'Error al crear la cita',

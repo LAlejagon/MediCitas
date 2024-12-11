@@ -45,7 +45,7 @@ class DoctorInfoController extends Controller
                 'especialidad_id' => $validated['especialidad_id'],
             ]);
 
-            return new DoctorInfoResource($doctorInfo); // Usar el recurso para la respuesta del doctor creado
+            return response()->json(new DoctorInfoResource($doctorInfo), 201); // Usar el recurso para la respuesta del doctor creado
         } catch (\Exception $e) {
             return response()->json([
                 'error' => 'Error al crear la información del doctor',
