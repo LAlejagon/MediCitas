@@ -175,6 +175,51 @@
                     </div>
                 </div>
             </div>
+            
+            // Schedule
+
+            <div class="row mt-4">
+                <div class="col">
+                    <div class="card">
+                        <div class="card-body">
+                            <a href="{{ route('schedule.create')}}" class="btn btn-primary">Agregar Horario</a>
+                            <hr>
+                            <table class="table table-sm table-bordered text-center">
+                                <thead>
+                                    <tr>
+                                        <th>ID (Usuario)</th>
+                                        <th>ID (Cita)</th>
+                                        <th>Fecha</th>
+                                        <th>Acciones</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @forelse ($schedules as $schedule)
+                                    <tr>
+                                        <td>{{ $schedule->user_id }}</td>
+                                        <td>{{ $schedule->cita_id }}</td>
+                                        <td>{{ $schedule->fecha }}</td>
+                                        <td>
+                                            <form action="{{ route('schedule.destroy', $schedule->user_id) }}" method="POST">
+                                                @csrf
+                                                @method('DELETE')
+                                                <a href="{{ route('schedule.show', $schedule->user_id) }}" class="btn btn-info">Mostrar</a>
+                                                <a href="{{ route('schedule.edit', $schedule->user_id) }}" class="btn btn-warning">Editar</a>
+                                                <button type="submit" class="btn btn-danger">Borrar</button>
+                                            </form>
+                                        </td>
+                                    </tr>
+                                    @empty
+                                    <tr>
+                                        <td colspan="4">No hay horarios registrados</td>
+                                    </tr>
+                                    @endforelse
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 

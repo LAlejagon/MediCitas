@@ -6,6 +6,7 @@ use App\Models\DoctorInfo;
 use App\Models\User;
 use App\Models\Specialty;
 use App\Models\Date;
+use App\Models\Schedule;
 use Illuminate\Http\Request;
 
 class DashboardController extends Controller
@@ -19,7 +20,8 @@ class DashboardController extends Controller
         $specialties = Specialty::paginate(5);
         $doctorsInfo = DoctorInfo::paginate(5);
         $dates = Date::paginate(5);
+        $schedules = Schedule::paginate(5);
 
-        return view('modules.index', compact('users', 'specialties', 'doctorsInfo', 'dates'));
+        return view('modules.index', compact('users', 'specialties', 'doctorsInfo', 'dates', 'schedules'));
     }
 }

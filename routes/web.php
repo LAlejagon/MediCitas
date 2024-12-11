@@ -5,6 +5,7 @@ use App\Http\Controllers\UserController;
 use App\Http\Controllers\SpecialtyController;
 use App\Http\Controllers\DoctorInfoController;
 use App\Http\Controllers\DateController;
+use App\Http\Controllers\ScheduleController;
 use App\Models\DoctorInfo;
 use Illuminate\Support\Facades\Route;
 use SebastianBergmann\CodeCoverage\Report\Html\Dashboard;
@@ -46,11 +47,21 @@ Route::get('/editDate/{id}', [DateController::class, 'edit'])->name('date.edit')
 Route::put('/updateDate/{id}', [DateController::class, 'update'])->name('date.update');
 Route::delete('/destroyDate/{id}', [DateController::class, 'destroy'])->name('date.destroy');
 
+//
 Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
 Route::get('login', [\App\Http\Controllers\Auth\LoginController::class, 'showLoginForm'])->name('login');
 Route::post('login', [\App\Http\Controllers\Auth\LoginController::class, 'login']);
 
+//Facturas
 Route::post('/invoices', [InvoiceController::class, 'store']); // Crear factura
 Route::get('/invoices', [InvoiceController::class, 'index']); // Listar facturas
 Route::get('/invoices/{id}', [InvoiceController::class, 'show']); // Ver una factura específica
 Route::post('/invoices/{id}/generate-signature', [InvoiceController::class, 'generateSignature']); // Generar firma
+
+//Schedule
+Route::get('/createSchedule', [ScheduleController::class, 'create'])->name('schedule.create');
+Route::post('/storeSchedule', [ScheduleController::class, 'store'])->name('schedule.store');
+Route::get('/showSchedule/{id}', [ScheduleController::class, 'show'])->name('schedule.show');
+Route::get('/editSchedule/{id}', [ScheduleController::class, 'edit'])->name('schedule.edit');
+Route::put('/updateSchedule/{id}', [ScheduleController::class, 'update'])->name('schedule.update');
+Route::delete('/destroySchedule/{id}', [ScheduleController::class, 'destroy'])->name('schedule.destroy');
