@@ -12,25 +12,25 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('users', function (Blueprint $table) {
-            $table->string('id')->primary(); // Cambiado a string para permitir ceros a la izquierda
+            $table->string('id')->primary(); // No AUTO_INCREMENT
             $table->string('name');
-            $table->string('phone')->nullable(); // Puedes hacer que el teléfono sea opcional
+            $table->string('phone')->nullable();
             $table->string('email')->unique()->index();
-            $table->string('address')->nullable(); // Puedes hacer que la dirección sea opcional
-            $table->string('gender')->nullable(); // Puedes hacer que el género sea opcional
-            $table->integer('age')->nullable(); // Puedes hacer que la edad sea opcional
+            $table->string('address')->nullable();
+            $table->string('gender')->nullable();
+            $table->integer('age')->nullable();
             $table->string('password');
-            $table->string('health_history')->nullable(); // Agregada la columna health_history
-            $table->string('user_type')->nullable(); // Agregada la columna user_type
+            $table->string('health_history')->nullable();
+            $table->string('user_type')->nullable();
             $table->timestamps();
         });
-
+    
         Schema::create('password_reset_tokens', function (Blueprint $table) {
             $table->string('email')->primary();
             $table->string('token');
             $table->timestamp('created_at')->nullable();
         });
-
+    
         Schema::create('sessions', function (Blueprint $table) {
             $table->string('id')->primary();
             $table->foreignId('user_id')->nullable()->index();
@@ -40,7 +40,7 @@ return new class extends Migration
             $table->integer('last_activity')->index();
         });
     }
-
+    
     /**
      * Reverse the migrations.
      */

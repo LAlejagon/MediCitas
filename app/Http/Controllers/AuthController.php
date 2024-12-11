@@ -13,21 +13,27 @@ class AuthController extends Controller
      * Registro de usuario.
      */
     public function register(Request $request)
-    {
-        $validated = $request->validate([
-            'name' => 'required|string|max:255',
-            'email' => 'required|string|email|max:255|unique:users',
-            'password' => 'required|string|min:8',
-        ]);
+{
+    $validated = $request->validate([
+        'name' => 'required|string|max:255',
+        'email' => 'required|string|email|max:255|unique:users',
+        'password' => 'required|string|min:8',
+    ]);
 
-        $user = User::create([
-            'name' => $validated['name'],
-            'email' => $validated['email'],
-            'password' => Hash::make($validated['password']),
-        ]);
+    $user = User::create([
+        'name' => $validated['name'],
+        'email' => $validated['email'],
+        'password' => Hash::make($validated['password']),
+        'phone' => $request->input('phone'),
+        'address' => $request->input('address'),
+        'gender' => $request->input('gender'),
+        'age' => $request->input('age'),
+        'health_history' => $request->input('health_history'),
+        'user_type' => $request->input('user_type'),
+    ]);
 
-        return response()->json(['message' => 'Usuario registrado exitosamente', 'user' => $user], 201);
-    }
+    return response()->json(['message' => 'Usuario registrado exitosamente', 'user' => $user], 201);
+}
 
     /**
      * Inicio de sesión.
