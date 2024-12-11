@@ -20,6 +20,7 @@ class Specialty extends Model // Cambiar a Model
      * @var array<int, string>
      */
     protected $fillable = [
+        'especialidad_id',
         'nombre',
     ];
 }
