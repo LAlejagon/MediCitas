@@ -14,13 +14,14 @@ class CreateDoctorInfoTable extends Migration
     public function up()
     {
         Schema::create('doctor_info', function (Blueprint $table) {
-            $table->string('user_id')->primary(); 
+            $table->string('user_id')->primary(); // Clave primaria
             $table->string('consultorio'); 
             $table->unsignedBigInteger('especialidad_id'); 
             $table->timestamps(); 
 
+            // Claves foráneas
             $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
-            $table->foreign('especialidad_id')->references('especialidad_id')->on('especialidades')->onDelete('cascade');
+            $table->foreign('especialidad_id')->references('id')->on('especialidades')->onDelete('cascade'); // Ajusta el nombre si es diferente
         });
     }
 
@@ -31,12 +32,7 @@ class CreateDoctorInfoTable extends Migration
      */
     public function down()
     {
-        Schema::table('doctorInfo', function (Blueprint $table) {
-            // Eliminar las claves foráneas antes de eliminar la tabla
-            $table->dropForeign(['cedula']);
-            $table->dropForeign(['especialidad_id']);
-        });
-
+        // Laravel elimina automáticamente las claves foráneas al eliminar la tabla
         Schema::dropIfExists('doctor_info');
     }
 }

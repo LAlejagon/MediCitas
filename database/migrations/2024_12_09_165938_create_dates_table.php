@@ -15,16 +15,16 @@ return new class extends Migration
             $table->id('cita_id'); // Primary key
             $table->date('fecha');
             $table->time('hora');
-            $table->string('cedula_usuario'); // Foreign key to users
-            $table->string('doctor_id'); // Foreign key to doctors
+            $table->string('user_id'); // Foreign key to users
+            $table->string('doctor_id'); // Foreign key to doctorInfo.user_id
             $table->string('lugar');
             $table->string('direccion');
             $table->text('razon')->nullable();
             $table->timestamps();
 
             // Foreign key constraints
-            $table->foreign('cedula_usuario')->references('id')->on('users')->onDelete('cascade');
-            $table->foreign('doctor_id')->references('user_id')->on('doctor_info')->onDelete('cascade');
+            $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
+            $table->foreign('doctor_id')->references('user_id')->on('doctorInfo')->onDelete('cascade');
         });
     }
 
@@ -33,6 +33,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('citas');
+        Schema::dropIfExists('dates');
     }
 };

@@ -22,18 +22,21 @@ class SpecialtyController extends Controller
      */
     public function store(Request $request)
     {
+        $request->headers->set('Accept', 'application/json'); // Forzar respuesta JSON
+    
         $validatedData = $request->validate([
             'especialidad_id' => 'required|integer|unique:especialidades,especialidad_id',
             'nombre' => 'required|string|max:255',
         ]);
-
+    
         $specialty = Specialty::create([
             'especialidad_id' => $validatedData['especialidad_id'],
             'nombre' => $validatedData['nombre'],
         ]);
-
-        return response()->json(new SpecialtyResource($specialty), 201); // Retornar la especialidad creada
+    
+        return response()->json(new SpecialtyResource($specialty), 201);
     }
+    
 
     /**
      * Display the specified resource.

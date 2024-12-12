@@ -18,34 +18,31 @@ class DoctorInfoController extends Controller
      */
     public function index()
     {
-        $doctorsInfo = DoctorInfo::with('specialty')->paginate(5);
-        return DoctorInfoResource::collection($doctorsInfo); // Usar el recurso para la colección de doctores
-
+        $doctorsInfo = DoctorInfo::with('specialty')->get(); // Obtiene todos los registros
+        return response()->json(DoctorInfoResource::collection($doctorsInfo)); // Solo devuelve los datos
     }
+
 
     /**
      * Store a newly created resource in storage.
      */
 
-     public function store(Request $request)
+    public function store(Request $request)
     {
-        // Establecer el encabezado 'Accept' como 'application/json' para esta solicitud
-        $request->headers->set('Accept', 'application/json');
-
-        $validated = $request->validate([
-            'user_id' => 'required|integer|exists:users,id',
+        $validatedData = $request->validate([
+            'user_id' => 'required|exists:users,id', // Verifica que el usuario existe
             'consultorio' => 'required|string|max:255',
-            'especialidad_id' => 'required|integer|exists:especialidades,especialidad_id',
+            'especialidad_id' => 'required|exists:especialidades,especialidad_id',
         ]);
 
-        $doctorInfo = DoctorInfo::create([
-            'user_id' => $validated['user_id'],
-            'consultorio' => $validated['consultorio'],
-            'especialidad_id' => $validated['especialidad_id'],
-        ]);
+        $doctorInfo = DoctorInfo::create($validatedData);
 
-        return response()->json(new DoctorInfoResource($doctorInfo), 201);
+        return response()->json([
+            'message' => 'Doctor created successfully',
+            'data' => $doctorInfo,
+        ], 201);
     }
+
 
     /**
      * Display the specified resource.
@@ -59,7 +56,7 @@ class DoctorInfoController extends Controller
 
         return response()->json([
             'user_id' => new UserResource($user),
-            'conultory' => $consultory,
+            'consultory' => $consultory,
             'specialty' => new SpecialtyResource($specialty),
         ], Response::HTTP_OK);
     }
