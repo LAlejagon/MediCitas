@@ -2,6 +2,8 @@
 
 namespace App\Http\Resources;
 
+use App\Models\Specialty;
+use App\Models\User;
 use Illuminate\Http\Resources\Json\JsonResource;
 
 class DoctorInfoResource extends JsonResource
@@ -14,11 +16,16 @@ class DoctorInfoResource extends JsonResource
      */
     public function toArray($request)
     {
-        return [
-            'id' => $this->doctor_id,
-            'name' => $this->name,
-            'specialty' => new SpecialtyResource($this->whenLoaded('specialty')), // Relación con la especialidad
-            'schedule' => ScheduleResource::collection($this->whenLoaded('schedule')), // Relación con el horario
-        ];
+        {
+            $user = User::findOrFail($this->user_id);
+            $consultory = $this->consultorio;
+            $specialty = Specialty::findOrFail($this->especialidad_id);
+    
+            return response()->json([
+                'user_id' => new UserResource($user),
+                'conultory' => $consultory,
+                'specialty' => new SpecialtyResource($specialty),
+            ]);
+        }
     }
 }

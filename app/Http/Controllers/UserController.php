@@ -14,43 +14,51 @@ class UserController extends Controller
     public function index()
     {
         $users = User::paginate(5);
-        return UserResource::collection($users); // Usar el recurso para la colección
+        return response()->json($users->map(function ($user) {
+            return [
+                'id' => $user->id,
+                'name' => $user->name,
+                'email' => $user->email,
+                'created_at' => $user->created_at,
+                // Agrega otros campos que desees incluir
+            ];
+        }));
     }
 
     /**
      * Store a newly created resource in storage.
      */
     public function store(Request $request)
-{
-    // Establecer el encabezado 'Accept' como 'application/json' para esta solicitud
-    $request->headers->set('Accept', 'application/json');
+    {
+        // Establecer el encabezado 'Accept' como 'application/json' para esta solicitud
+        $request->headers->set('Accept', 'application/json');
 
-    $validatedData = $request->validate([
-        'id' => 'required|string|max:255|unique:users',
-        'name' => 'required|string|max:255',
-        'email' => 'required|string|email|max:255|unique:users',
-        'password' => 'required|string|min:8',
-        'address' => 'nullable|string|max:255',
-        'gender' => 'nullable|string|max:10',
-        'age' => 'nullable|integer|min:0',
-        'health_history' => 'nullable|string|max:500',
-        'user_type' => 'required|string|max:50',
-    ]);
+        $validatedData = $request->validate([
+            'id' => 'required|string|max:255|unique:users',
+            'name' => 'required|string|max:255',
+            'email' => 'required|string|email|max:255|unique:users',
+            'password' => 'required|string|min:8',
+            'address' => 'nullable|string|max:255',
+            'gender' => 'nullable|string|max:10',
+            'age' => 'nullable|integer|min:0',
+            'health_history' => 'nullable|string|max:500',
+            'user_type' => 'required|string|max:50',
+        ]);
 
-    $user = User::create([
-        'id' => $validatedData['id'],
-        'name' => $validatedData['name'],
-        'email' => $validatedData['email'],
-        'password' => bcrypt($validatedData['password']),
-        'address' => $validatedData['address'],
-        'gender' => $validatedData['gender'],
-        'age' => $validatedData['age'],
-        'health_history' => $validatedData['health_history'],
-        'user_type' => $validatedData['user_type'],
-    ]);
+        $user = User::create([
+            'id' => $validatedData['id'],
+            'name' => $validatedData['name'],
+            'email' => $validatedData['email'],
+            'password' => bcrypt($validatedData['password']),
+            'address' => $validatedData['address'],
+            'gender' => $validatedData['gender'],
+            'age' => $validatedData['age'],
+            'health_history' => $validatedData['health_history'],
+            'user_type' => $validatedData['user_type'],
+        ]);
 
-    return response()->json(new UserResource($user), 201); // Respuesta JSON explícita con código de éxito
-}
+        return response()->json(new UserResource($user), 201); // Respuesta JSON explícita con código de éxito
+    }
 
 
     /**

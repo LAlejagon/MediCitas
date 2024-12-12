@@ -18,42 +18,33 @@ class DoctorInfoController extends Controller
      */
     public function index()
     {
-        try {
-            $doctorsInfo = DoctorInfo::with('specialty')->paginate(5);
-            return DoctorInfoResource::collection($doctorsInfo); // Usar el recurso para la colección de doctores
-        } catch (\Exception $e) {
-            return response()->json([
-                'error' => 'Error al obtener la lista de doctores',
-                'message' => $e->getMessage()
-            ], Response::HTTP_INTERNAL_SERVER_ERROR);
-        }
+        $doctorsInfo = DoctorInfo::with('specialty')->paginate(5);
+        return DoctorInfoResource::collection($doctorsInfo); // Usar el recurso para la colección de doctores
+
     }
 
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request)
+
+     public function store(Request $request)
     {
+        // Establecer el encabezado 'Accept' como 'application/json' para esta solicitud
+        $request->headers->set('Accept', 'application/json');
+
         $validated = $request->validate([
             'user_id' => 'required|integer|exists:users,id',
             'consultorio' => 'required|string|max:255',
             'especialidad_id' => 'required|integer|exists:especialidades,especialidad_id',
         ]);
 
-        try {
-            $doctorInfo = DoctorInfo::create([
-                'user_id' => $validated['user_id'],
-                'consultorio' => $validated['consultorio'],
-                'especialidad_id' => $validated['especialidad_id'],
-            ]);
+        $doctorInfo = DoctorInfo::create([
+            'user_id' => $validated['user_id'],
+            'consultorio' => $validated['consultorio'],
+            'especialidad_id' => $validated['especialidad_id'],
+        ]);
 
-            return response()->json(new DoctorInfoResource($doctorInfo), 201); // Usar el recurso para la respuesta del doctor creado
-        } catch (\Exception $e) {
-            return response()->json([
-                'error' => 'Error al crear la información del doctor',
-                'message' => $e->getMessage()
-            ], Response::HTTP_INTERNAL_SERVER_ERROR);
-        }
+        return response()->json(new DoctorInfoResource($doctorInfo), 201);
     }
 
     /**
@@ -61,22 +52,16 @@ class DoctorInfoController extends Controller
      */
     public function show(string $id)
     {
-        try {
-            $doctorInfo = DoctorInfo::findOrFail($id);
-            $user = User::findOrFail($doctorInfo->user_id);
-            $specialty = Specialty::findOrFail($doctorInfo->especialidad_id);
+        $doctorInfo = DoctorInfo::findOrFail($id);
+        $user = User::findOrFail($doctorInfo->user_id);
+        $consultory = $doctorInfo->consultorio;
+        $specialty = Specialty::findOrFail($doctorInfo->especialidad_id);
 
-            return response()->json([
-                'doctorInfo' => new DoctorInfoResource($doctorInfo),
-                'user' => new UserResource($user),
-                'specialty' => new SpecialtyResource($specialty),
-            ], Response::HTTP_OK);
-        } catch (\Exception $e) {
-            return response()->json([
-                'error' => 'Doctor no encontrado',
-                'message' => $e->getMessage()
-            ], Response::HTTP_NOT_FOUND);
-        }
+        return response()->json([
+            'user_id' => new UserResource($user),
+            'conultory' => $consultory,
+            'specialty' => new SpecialtyResource($specialty),
+        ], Response::HTTP_OK);
     }
 
     /**
