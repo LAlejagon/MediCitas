@@ -2,24 +2,32 @@
 
 namespace App\Http\Resources;
 
+use App\Models\User;
+use App\Models\DoctorInfo;
 use Illuminate\Http\Resources\Json\JsonResource;
 
 class DateResource extends JsonResource
 {
     /**
-     * Transformar el recurso en un array.
+     * Transform the resource into an array.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return array
      */
     public function toArray($request)
     {
+        $user = User::findOrFail($this->cedula_usuario);
+        $doctor = DoctorInfo::findOrFail($this->doctor_id);
+
         return [
-            'id' => $this->id,
-            'date' => $this->date,
-            'time' => $this->time,
-            'doctor_id' => $this->doctor_id,
-            'patient_id' => $this->patient_id,
-            'status' => $this->status,
-            'created_at' => $this->created_at->toDateTimeString(),
-            'updated_at' => $this->updated_at->toDateTimeString(),
+            'cita_id' => $this->cita_id,
+            'user_id' => new UserResource($user),
+            'doctor_id' => new DoctorInfoResource($doctor),
+            'fecha' => $this->fecha,
+            'hora' => $this->hora,
+            'lugar' => $this->lugar,
+            'direccion' => $this->direccion,
+            'razon' => $this->razon,
         ];
     }
 }

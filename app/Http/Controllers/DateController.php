@@ -6,6 +6,10 @@ use App\Models\Date; // Asegúrate de tener el modelo Cita
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use App\Http\Resources\DateResource; // Asegúrate de tener un recurso para Cita
+use App\Http\Resources\DoctorInfoResource;
+use App\Http\Resources\UserResource;
+use App\Models\DoctorInfo;
+use App\Models\User;
 
 class DateController extends Controller
 {
@@ -14,7 +18,7 @@ class DateController extends Controller
      */
     public function index()
     {
-        $citas = Date::paginate(5);
+        $citas = Date::with('user', 'doctor')->paginate(5);
         return DateResource::collection($citas); // Usar el recurso para la colección de citas
     }
 
@@ -58,7 +62,7 @@ class DateController extends Controller
         return new DateResource($cita); // Usar el recurso para la respuesta de la cita
     }
 
-    /**
+        /**
      * Update the specified resource in storage.
      */
     public function update(Request $request, string $id)
@@ -70,7 +74,7 @@ class DateController extends Controller
                 'fecha' => 'required|date',
                 'hora' => 'required|date_format:H:i',
                 'cedula_usuario' => 'required|string|max:255',
-                'doctor_id' => 'required|string|max:255|exists:doctors,id',
+                'doctor_id' => 'required|string|max:255|exists:doctorinfo,user_id',
                 'lugar' => 'required|string|max:255',
                 'direccion' => 'required|string|max:255',
                 'razon' => 'nullable|string|max:500',
@@ -78,7 +82,18 @@ class DateController extends Controller
 
             $cita->update($validated);
 
-            return new DateResource($cita); // Usar el recurso para la respuesta de la cita actualizada
+            $user = User::findOrFail($cita->cedula_usuario);
+            $doctor = DoctorInfo::findOrFail($cita->doctor_id);
+
+            return response()->json([
+                'user_id' => new UserResource($user),
+                'doctor_id' => new DoctorInfoResource($doctor),
+                'fecha' => $cita->fecha,
+                'hora' => $cita->hora,
+                'lugar' => $cita->lugar,
+                'direccion' => $cita->direccion,
+                'razon' => $cita->razon,
+            ], Response::HTTP_OK);
         } catch (\Exception $e) {
             return response()->json([
                 'error' => 'Error al actualizar la cita',
@@ -86,7 +101,6 @@ class DateController extends Controller
             ], Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
-
     /**
      * Remove the specified resource from storage.
      */
