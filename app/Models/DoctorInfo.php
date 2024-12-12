@@ -9,7 +9,16 @@ class DoctorInfo extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['user_id', 'consultorio', 'especialidad_id'];
+    protected $table = 'doctorinfo'; // Nombre de la tabla en la base de datos
+
+    protected $primaryKey = 'user_id'; // Clave primaria
+
+    protected $fillable = 
+    [
+        'user_id', 
+        'consultorio', 
+        'especialidad_id'
+    ];
 
     public function user()
     {

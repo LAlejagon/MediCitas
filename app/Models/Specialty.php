@@ -25,15 +25,7 @@ class Specialty extends Model
      * @var array<int, string>
      */
     protected $fillable = [
-        'id',
+        'especialidad_id',
         'nombre', 
     ];
-
-    /**
-     * Relación: Especialidad tiene muchos doctores.
-     */
-    public function doctors()
-    {
-        return $this->hasMany(DoctorInfo::class, 'especialidad_id', 'especialidad_id');
-    }
 }

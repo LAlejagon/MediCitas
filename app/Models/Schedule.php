@@ -14,6 +14,7 @@ class Schedule extends Model
     protected $primaryKey = 'user_id';
 
     protected $fillable = [
+        'user_id',
         'cita_id',
         'fecha',
     ];

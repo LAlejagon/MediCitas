@@ -34,7 +34,8 @@ class SpecialtyController extends Controller
             'nombre' => $validatedData['nombre'],
         ]);
     
-        return response()->json(new SpecialtyResource($specialty), 201);
+        // Devolver el recurso directamente
+        return response()->json(new SpecialtyResource($specialty));
     }
     
 

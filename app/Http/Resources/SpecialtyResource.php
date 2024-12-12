@@ -15,8 +15,8 @@ class SpecialtyResource extends JsonResource
     public function toArray($request)
     {
         return [
-            'id' => $this->especialidad_id,
-            'name' => $this->nombre,
+            'especialidad_id' => $this->especialidad_id,
+            'nombre' => $this->nombre,
         ];
     }
 }
