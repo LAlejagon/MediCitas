@@ -18,6 +18,8 @@ class Date extends Model
         'hora',
         'cedula_usuario',
         'doctor_id',
+        'lugar',
+        'direccion',
         'razon',
     ]; 
 
